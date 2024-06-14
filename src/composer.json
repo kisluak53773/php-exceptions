@@ -1,0 +1,16 @@
+{
+    "name": "dzianis/php-exceptions",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    },
+    "authors": [
+        {
+            "name": "dzianis",
+            "email": "kisluka53773@gmail.com"
+        }
+    ],
+    "require": {}
+}
