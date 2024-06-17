@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Exceptions\{BaseException, ValidationException, DataAccessException};
+use App\Exceptions\{BaseException, ValidationException};
 
 try {
-    throw new BaseException();
-} catch (DataAccessException $e) {
-    echo $e->getMessage() . PHP_EOL;
-} catch (ValidationException $e) {
-    echo $e->getMessage() . PHP_EOL;
+    throw new ValidationException();
 } catch (BaseException $e) {
     echo $e->getMessage() . PHP_EOL;
 }
