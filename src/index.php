@@ -2,23 +2,28 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
-use App\Exceptions\{BaseException, ValidationException, DataAccessException};
+use App\Router\RouterMapper;
+use App\Controller\HomeController;
+use App\Router\Exception\RouterException;
+use App\Controller\FrontController;
+use Monolog\Logger;
+use App\Service\ExceptionLogger;
+
+header('Content-Type: application/json');
+
+$logger = new Logger('router');
+$exceptionLogger = new ExceptionLogger($logger);
+
+$router = new RouterMapper();
+
+$router->get('/',[FrontController::class, 'home']);
+
+$router->get('/about',[HomeController::class, 'about']);
 
 try {
-    throw new BaseException();
-} catch (DataAccessException $e) {
-    echo $e->getMessage() . PHP_EOL;
-} catch (ValidationException $e) {
-    echo $e->getMessage() . PHP_EOL;
-} catch (BaseException $e) {
-    echo $e->getMessage() . PHP_EOL;
-}
-
-try {
-    throw new BaseException();
-} catch (Throwable $e) {
-    echo $e->getMessage() . PHP_EOL;
-    error_log($e->getMessage());
+    $router->handleRoute($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+} catch (RouterException $e) {
+    $exceptionLogger->handleException($e);
 }

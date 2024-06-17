@@ -1,0 +1,25 @@
+version: "3.3"
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - my-network
+
+  php:
+    image: php:fpm-alpine
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  db-data:
