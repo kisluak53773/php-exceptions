@@ -38,10 +38,6 @@ class RouterMapper
         $regex = preg_replace('/\{(\w+)\}/', '(?P<${1}>\d+)', $pattern);
         $regex = str_replace('/', '\/', $regex);
 
-        echo preg_match('/^'.$regex.'$/', $pattern, $matches);
-
-        var_dump($matches);
-
         if (preg_match('/^'.$regex.'$/', $routeUrl, $matches)) {
             return array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
         }
