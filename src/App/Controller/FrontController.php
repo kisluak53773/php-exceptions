@@ -8,13 +8,12 @@ use Exception;
 
 class FrontController
 {
-    public function home(): void
+    public function home(string $id = 'sassa'): void
     {
         try {
-            $result = "data";
-            $response = ['success' => true, 'result' => $result];
+            $response = ['data' => $id];
         } catch (Exception $e) {
-            $response = ['error' => true, 'message' => 'Ошибка: ' . $e->getMessage()];
+            $response = [ 'message' => 'Ошибка: ' . $e->getMessage()];
             http_response_code(500);
         }
 

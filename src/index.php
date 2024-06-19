@@ -18,12 +18,12 @@ $exceptionLogger = new ExceptionLogger($logger);
 
 $router = new RouterMapper();
 
-$router->get('/',[FrontController::class, 'home']);
+$router->addGetRoute('/{id}',[FrontController::class, 'home']);
 
-$router->get('/about',[HomeController::class, 'about']);
+$router->addPostRoute('/about/{id}',[HomeController::class, 'about']);
 
 try {
     $router->handleRoute($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
 } catch (RouterException $e) {
-    $exceptionLogger->handleException($e);
+    $exceptionLogger->log($e);
 }

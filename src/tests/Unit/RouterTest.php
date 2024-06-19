@@ -20,7 +20,7 @@ class RouterTest extends TestCase
     }
 
     /** @test */
-    public function itRegisterARouter(): void
+    public function testRegisterAdsRoute(): void
     {
         $this->router->register("/users", "GET" , ["UserController", "index"]);
         $expected = [
@@ -33,9 +33,9 @@ class RouterTest extends TestCase
     }
 
     /** @test */
-    public function itRegistersGetRoutes(): void
+    public function testAddGetRouteAddsGetRoute(): void
     {
-        $this->router->get("/users", ["UserController", "index"]);
+        $this->router->addGetRoute("/users", ["UserController", "index"]);
         $expected = [
             "/users" => [
                 "GET" => ["UserController", "index"],
@@ -46,9 +46,9 @@ class RouterTest extends TestCase
     }
 
     /** @test */
-    public function itRegistersPostRoutes(): void
+    public function testAddPostRouteAdsPostRoute(): void
     {
-        $this->router->post("/users", ["UserController", "index"]);
+        $this->router->addPostRoute("/users", ["UserController", "index"]);
         $expected = [
             "/users" => [
                 "POST" => ["UserController", "index"],
@@ -59,24 +59,24 @@ class RouterTest extends TestCase
     }
 
     /** @test */
-    public function thereAreNoRoutesWhenRouterIsCreated(): void
+    public function testRouterMapperInitializedWithEmptyRoutes(): void
     {
         $this->assertEmpty($this->router->getRoutes());
     }
 
     /**
      * @test
-     * @dataProvider routeExceptionCases
+     * @dataProvider provideTestDataForHandleRouteCasesWithException
      */
-    public function itThrowsRouterException(string $routeUrl, string $method): void
+    public function testHandleRouteThrowsRouterExceptionWithDifferentCases(string $routeUrl, string $method): void
     {
         $users = new class
         {
             public function delete(): void
             {}
         };
-        $this->router->get("/users", ["UserController", "index"]);
-        $this->router->post('/users', [$users::class, "store"]);
+        $this->router->addGetRoute("/users", ["UserController", "index"]);
+        $this->router->addPostRoute('/users', [$users::class, "store"]);
 
         $this->expectException(RouterException::class);
         $this->router->handleRoute($routeUrl, $method);
@@ -84,7 +84,7 @@ class RouterTest extends TestCase
 
 
     /** @test */
-    public function itHandlesMethod(): void
+    public function testHandleRouteWithExistingRoute(): void
     {
         $users = new class
         {
@@ -93,11 +93,12 @@ class RouterTest extends TestCase
                 return [1,2,3];
             }
         };
-        $this->router->get("/users", [$users::class, "index"]);
+        $this->router->addGetRoute("/users", [$users::class, "index"]);
 
         $this->assertEquals([1,2,3], $this->router->handleRoute('/users', 'GET'));
     }
-    public function routeExceptionCases(): array
+
+    public function provideTestDataForHandleRouteCasesWithException(): array
     {
         return [
             ['/users','PUT'],

@@ -18,12 +18,12 @@ class RouterMapper
         $this->routes[$routeUrl][$method] = $action;
     }
 
-    public function get($routeUrl, array $action): void
+    public function addGetRoute($routeUrl, array $action): void
     {
         $this->register($routeUrl, 'GET', $action);
     }
 
-    public function post($routeUrl, array $action): void
+    public function addPostRoute($routeUrl, array $action): void
     {
         $this->register($routeUrl, 'POST', $action);
     }
@@ -31,6 +31,22 @@ class RouterMapper
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+
+    public function parseUrl(string $routeUrl, string $pattern): array|false
+    {
+        $regex = preg_replace('/\{(\w+)\}/', '(?P<${1}>\d+)', $pattern);
+        $regex = str_replace('/', '\/', $regex);
+
+        echo preg_match('/^'.$regex.'$/', $pattern, $matches);
+
+        var_dump($matches);
+
+        if (preg_match('/^'.$regex.'$/', $routeUrl, $matches)) {
+            return array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+        }
+
+        return false;
     }
 
     /**
@@ -44,42 +60,83 @@ class RouterMapper
      */
     public function handleRoute(string $routeUrl, string $method): mixed
     {
-        if (!isset($this->routes[$routeUrl]) || !isset($this->routes[$routeUrl][$method])) {
-            http_response_code(404);
-            echo json_encode(["message" => "Route not found."]);
-            throw new NotFoundException();
+        foreach ($this->routes as $storedUrl => $actions) {
+            $params = $this->parseUrl($routeUrl, $storedUrl);
+            if (is_array($params)) {
+                $action = $actions[$method];
+
+                if (!$action) {
+                    http_response_code(404);
+                    echo json_encode(["message" => "Route not found."]);
+                    throw new NotFoundException();
+                }
+
+                if (!is_array($action)) {
+                    http_response_code(500);
+                    echo json_encode(["message" => "Something went wrong"]);
+                    throw new WrongControllerDefinition();
+                }
+
+                [$class, $method] = $action;
+
+                if (!class_exists($class)) {
+                    http_response_code(500);
+                    echo json_encode(["message" => "Something went wrong"]);
+                    throw new ControllerNotFound();
+                }
+
+                $classInstance = new $class();
+
+                if (!method_exists($classInstance, $method)) {
+                    http_response_code(500);
+                    echo json_encode(["message" => "Something went wrong"]);
+                    throw new ControllerMethodNotDefined();
+                }
+
+                return call_user_func_array([$classInstance, $method], [...$params]);
+
+            }
         }
 
-        $action = $this->routes[$routeUrl][$method];
-
-        if (!$action) {
-            http_response_code(404);
-            echo json_encode(["message" => "Route not found."]);
-            throw new NotFoundException();
-        }
-
-        if (!is_array($action)) {
-            http_response_code(500);
-            echo json_encode(["message" => "Something went wrong"]);
-            throw new WrongControllerDefinition();
-        }
-
-        [$class, $method] = $action;
-
-        if (!class_exists($class)) {
-            http_response_code(500);
-            echo json_encode(["message" => "Something went wrong"]);
-            throw new ControllerNotFound();
-        }
-
-        $classInstance = new $class();
-
-        if (!method_exists($classInstance, $method)) {
-            http_response_code(500);
-            echo json_encode(["message" => "Something went wrong"]);
-            throw new ControllerMethodNotDefined();
-        }
-
-        return call_user_func_array([$classInstance, $method], []);
+        http_response_code(404);
+        echo json_encode(["message" => "Route not found."]);
+        throw new NotFoundException();
+//        if (!isset($this->routes[$routeUrl]) || !isset($this->routes[$routeUrl][$method])) {
+//            http_response_code(404);
+//            echo json_encode(["message" => "Route not found."]);
+//            throw new NotFoundException();
+//        }
+//
+//        $action = $this->routes[$routeUrl][$method];
+//
+//        if (!$action) {
+//            http_response_code(404);
+//            echo json_encode(["message" => "Route not found."]);
+//            throw new NotFoundException();
+//        }
+//
+//        if (!is_array($action)) {
+//            http_response_code(500);
+//            echo json_encode(["message" => "Something went wrong"]);
+//            throw new WrongControllerDefinition();
+//        }
+//
+//        [$class, $method] = $action;
+//
+//        if (!class_exists($class)) {
+//            http_response_code(500);
+//            echo json_encode(["message" => "Something went wrong"]);
+//            throw new ControllerNotFound();
+//        }
+//
+//        $classInstance = new $class();
+//
+//        if (!method_exists($classInstance, $method)) {
+//            http_response_code(500);
+//            echo json_encode(["message" => "Something went wrong"]);
+//            throw new ControllerMethodNotDefined();
+//        }
+//
+//        return call_user_func_array([$classInstance, $method], []);
     }
 }

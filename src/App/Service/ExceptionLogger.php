@@ -13,7 +13,7 @@ class ExceptionLogger
     public function __construct(private Logger $logger)
     {}
 
-    public function handleException(Throwable $e): bool
+    public function log(Throwable $e): bool
     {
         $consoleHandler = new StreamHandler('php://stdout');
         $this->logger->pushHandler($consoleHandler);
