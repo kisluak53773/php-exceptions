@@ -63,6 +63,12 @@ class RouterMapper
         foreach ($this->routes as $storedUrl => $actions) {
             $params = $this->parseUrl($routeUrl, $storedUrl);
             if (is_array($params)) {
+                if (!isset($actions[$method])) {
+                    http_response_code(404);
+                    echo json_encode(["message" => "Route not found."]);
+                    throw new NotFoundException();
+                }
+
                 $action = $actions[$method];
 
                 if (!$action) {
