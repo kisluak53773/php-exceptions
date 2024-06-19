@@ -101,42 +101,5 @@ class RouterMapper
         http_response_code(404);
         echo json_encode(["message" => "Route not found."]);
         throw new NotFoundException();
-//        if (!isset($this->routes[$routeUrl]) || !isset($this->routes[$routeUrl][$method])) {
-//            http_response_code(404);
-//            echo json_encode(["message" => "Route not found."]);
-//            throw new NotFoundException();
-//        }
-//
-//        $action = $this->routes[$routeUrl][$method];
-//
-//        if (!$action) {
-//            http_response_code(404);
-//            echo json_encode(["message" => "Route not found."]);
-//            throw new NotFoundException();
-//        }
-//
-//        if (!is_array($action)) {
-//            http_response_code(500);
-//            echo json_encode(["message" => "Something went wrong"]);
-//            throw new WrongControllerDefinition();
-//        }
-//
-//        [$class, $method] = $action;
-//
-//        if (!class_exists($class)) {
-//            http_response_code(500);
-//            echo json_encode(["message" => "Something went wrong"]);
-//            throw new ControllerNotFound();
-//        }
-//
-//        $classInstance = new $class();
-//
-//        if (!method_exists($classInstance, $method)) {
-//            http_response_code(500);
-//            echo json_encode(["message" => "Something went wrong"]);
-//            throw new ControllerMethodNotDefined();
-//        }
-//
-//        return call_user_func_array([$classInstance, $method], []);
     }
 }
