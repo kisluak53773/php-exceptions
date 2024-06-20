@@ -15,10 +15,11 @@ class ExceptionLogger
 
     public function log(Throwable $e): bool
     {
-        $consoleHandler = new StreamHandler('php://stdout');
+        $consoleHandler = new StreamHandler(STDOUT);
         $this->logger->pushHandler($consoleHandler);
         $class = explode('\\', get_class($e));
-        $this->logger->error($e->getMessage() . ' line:' . $e->getLine() . ' file:' . $e->getFile() . ' error:' . $class[count($class) - 1]);
+        $this->logger->error($e->getMessage() . ' line:' . $e->getLine() .
+            ' file:' . $e->getFile() . ' error:' . $class[count($class) - 1]);
 
         return true;
     }

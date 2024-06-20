@@ -15,6 +15,6 @@ class HomeController
 
     public function about(): void
     {
-        phpinfo();
+        xdebug_info();
     }
 }

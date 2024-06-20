@@ -48,7 +48,9 @@ class RouterMapper
     /**
      * @param string $routeUrl
      * @param string $method
+     *
      * @return mixed
+     *
      * @throws ControllerMethodNotDefined
      * @throws ControllerNotFound
      * @throws NotFoundException

@@ -20,7 +20,7 @@ $router = new RouterMapper();
 
 $router->addGetRoute('/{id}',[FrontController::class, 'home']);
 
-$router->addPostRoute('/about/{id}',[HomeController::class, 'about']);
+$router->addGetRoute('/about',[HomeController::class, 'about']);
 
 try {
     $router->handleRoute($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

@@ -11,7 +11,11 @@ services:
       - my-network
 
   php:
-    image: php:fpm-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./src:/var/www/html
     networks:
@@ -20,6 +24,3 @@ services:
 networks:
   my-network:
     driver: bridge
-
-volumes:
-  db-data:
